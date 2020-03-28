@@ -10,6 +10,20 @@ Tasks:
 - Make it faster.
 - Make it accept a specific group, and a specific page as parameter to process only mentioned groups or pages.
 
+## Generate fake data
+It's not quite important to generate a fake data, but you can still create it if you want to avoid creating fake data on every run.
+
+```sh
+# node generate-fake-file.js pageLength groupLength filePath
+node generate-fake-file.js 1000 302 sample.json
+```
+
+You can test the sample file using the following,
+```
+node load.js
+python3 load.py
+```
+
 ## input
 ➜  json-data-comparison git:(master) ✗ node index.js
 525 Bytes

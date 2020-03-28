@@ -1,3 +1,6 @@
+const log = data => console.log(JSON.stringify(data, null, 2));
+const logLength = data => console.log(byteLength(JSON.stringify(data)));
+
 // Generates fake data to use in this experiment
 function getData(pageLimit = 1, groupLimit = 1) {
   function getGroupData(identifier) {
@@ -10,7 +13,7 @@ function getData(pageLimit = 1, groupLimit = 1) {
         [`${identifier} property 1`]: `${identifier} - ${i} First ${rand}`,
         [`${identifier} property 2`]: `${identifier} - ${i} Second ${rand}`
       };
-      
+
       // this data get's added only sometimes, which means the first group might not have all keys we need
       if (i % 2 === 0)
         data[`${identifier} property 3`] = `${identifier} - ${i} third ${rand}`;
@@ -55,5 +58,4 @@ function byteLength(str) {
   return formatBytes(s);
 }
 
-
-module.exports = { getData, byteLength };
+module.exports = { getData, byteLength, log, logLength };
