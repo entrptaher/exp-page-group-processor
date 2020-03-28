@@ -19,9 +19,10 @@ node generate-fake-file.js 1000 302 sample.json
 ```
 
 You can test the sample file using the following,
-```
-node load.js
-python3 load.py
+```sh
+node load.js # ~960ms
+python3 load.py # 0.4393s
+crystal build load.cr --release && ./load # 1.8894s
 ```
 
 ## input
