@@ -8,7 +8,7 @@ const { getData, byteLength, log, logLength } = require("./utils");
 // put (10, 415) to generate a ~1MB file
 // put (1000, 1000) to generate a ~195MB file
 // put (1000, 100) to generate a ~19.17MB file
-const input = getData(1000, 415);
+const input = getData(1000, 302); // 100MB file?
 
 // logLength(input);
 // log(input);
