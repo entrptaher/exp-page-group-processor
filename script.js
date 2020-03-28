@@ -28,6 +28,8 @@ const processGroup = output => {
   return data;
 };
 
+const mergeProcess = input => mergeGroup(processGroup(input));
+
 const addKeyToRow = data =>
   data.map((d, index) => ({ key: `${index + 1}`, ...d }));
 
@@ -47,8 +49,6 @@ const generateColumns = data => {
   }));
 };
 
-const mergeProcess = input => mergeGroup(processGroup(input));
-
 const tableData = output => {
   const hasData = !!(output && output.length);
   if (hasData) {
@@ -67,7 +67,6 @@ const tableData = output => {
 module.exports = {
   tableData,
   generateColumns,
-  byteLength,
   mergeProcess,
   mergeGroup,
   processGroup
