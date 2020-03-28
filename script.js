@@ -1,26 +1,3 @@
-// https://stackoverflow.com/a/18650828/6161265
-function formatBytes(a, b) {
-  if (0 == a) return "0 Bytes";
-  var c = 1024,
-    d = b || 2,
-    e = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"],
-    f = Math.floor(Math.log(a) / Math.log(c));
-  return parseFloat((a / Math.pow(c, f)).toFixed(d)) + " " + e[f];
-}
-
-// https://gist.github.com/lovasoa/11357947
-function byteLength(str) {
-  // returns the byte length of an utf8 string
-  var s = str.length;
-  for (var i = str.length - 1; i >= 0; i--) {
-    var code = str.charCodeAt(i);
-    if (code > 0x7f && code <= 0x7ff) s++;
-    else if (code > 0x7ff && code <= 0xffff) s += 2;
-    if (code >= 0xdc00 && code <= 0xdfff) i--; //trail surrogate
-  }
-  return formatBytes(s);
-}
-
 const collator = new Intl.Collator(undefined, {
   numeric: true,
   sensitivity: "base"
@@ -51,9 +28,45 @@ const processGroup = output => {
   return data;
 };
 
+const addKeyToRow = data =>
+  data.map((d, index) => ({ key: `${index + 1}`, ...d }));
+
+const generateColumns = data => {
+  const headers = [];
+  for (const d of data) {
+    const keys = Object.keys(d);
+    for (const key of keys) {
+      if (!headers.includes(key)) {
+        headers.push(key);
+      }
+    }
+  }
+  return headers.map(e => ({
+    title: e,
+    dataIndex: e
+  }));
+};
+
 const mergeProcess = input => mergeGroup(processGroup(input));
 
+const tableData = output => {
+  const hasData = !!(output && output.length);
+  if (hasData) {
+    const data = addKeyToRow(output);
+    return {
+      columns: generateColumns(output),
+      dataSource: data.length ? data : []
+    };
+  }
+  return {
+    columns: [],
+    dataSource: []
+  };
+};
+
 module.exports = {
+  tableData,
+  generateColumns,
   byteLength,
   mergeProcess,
   mergeGroup,

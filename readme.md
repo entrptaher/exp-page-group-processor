@@ -10,58 +10,115 @@ Tasks:
 - Make it faster.
 - Make it accept a specific group, and a specific page as parameter to process only mentioned groups or pages.
 
-## Sample Input
-
-➜  node index.js
-425 Bytes
+## input
+➜  json-data-comparison git:(master) ✗ node index.js
+525 Bytes
 ```json
 {
   "page1": {
     "group1": [
       {
-        "group 1 property 1": "group 1 - 1 First qi0atr",
-        "group 1 property 2": "group 1 - 1 Second qi0atr"
+        "group 1 property 1": "group 1 - 1 First 9ylp7h",
+        "group 1 property 2": "group 1 - 1 Second 9ylp7h"
       },
       {
-        "group 1 property 1": "group 1 - 2 First v8ajbs",
-        "group 1 property 2": "group 1 - 2 Second v8ajbs"
+        "group 1 property 1": "group 1 - 2 First zb226h",
+        "group 1 property 2": "group 1 - 2 Second zb226h",
+        "group 1 property 3": "group 1 - 2 third zb226h"
       }
     ],
     "group2": [
       {
-        "group 2 property 1": "group 2 - 1 First n1jeg",
-        "group 2 property 2": "group 2 - 1 Second n1jeg"
+        "group 2 property 1": "group 2 - 1 First t5km7v",
+        "group 2 property 2": "group 2 - 1 Second t5km7v"
       },
       {
-        "group 2 property 1": "group 2 - 2 First jwxln",
-        "group 2 property 2": "group 2 - 2 Second jwxln"
+        "group 2 property 1": "group 2 - 2 First 3e0a7f",
+        "group 2 property 2": "group 2 - 2 Second 3e0a7f",
+        "group 2 property 3": "group 2 - 2 third 3e0a7f"
       }
     ]
   }
 }
 ```
 
-## Sample Output
-processGroup: 0.160ms
-mergeGroup: 0.035ms
-
+## merged data
 ```json
 [
   {
-    "group 1 property 1": "group 1 - 1 First qi0atr",
-    "group 1 property 2": "group 1 - 1 Second qi0atr"
+    "group 1 property 1": "group 1 - 1 First 9ylp7h",
+    "group 1 property 2": "group 1 - 1 Second 9ylp7h"
   },
   {
-    "group 1 property 1": "group 1 - 2 First v8ajbs",
-    "group 1 property 2": "group 1 - 2 Second v8ajbs"
+    "group 1 property 1": "group 1 - 2 First zb226h",
+    "group 1 property 2": "group 1 - 2 Second zb226h",
+    "group 1 property 3": "group 1 - 2 third zb226h"
   },
   {
-    "group 2 property 1": "group 2 - 1 First n1jeg",
-    "group 2 property 2": "group 2 - 1 Second n1jeg"
+    "group 2 property 1": "group 2 - 1 First t5km7v",
+    "group 2 property 2": "group 2 - 1 Second t5km7v"
   },
   {
-    "group 2 property 1": "group 2 - 2 First jwxln",
-    "group 2 property 2": "group 2 - 2 Second jwxln"
+    "group 2 property 1": "group 2 - 2 First 3e0a7f",
+    "group 2 property 2": "group 2 - 2 Second 3e0a7f",
+    "group 2 property 3": "group 2 - 2 third 3e0a7f"
   }
 ]
+```
+
+## final data
+Notice how the columns are extracted from all groups
+```json
+{
+  "columns": [
+    {
+      "title": "group 1 property 1",
+      "dataIndex": "group 1 property 1"
+    },
+    {
+      "title": "group 1 property 2",
+      "dataIndex": "group 1 property 2"
+    },
+    {
+      "title": "group 1 property 3",
+      "dataIndex": "group 1 property 3"
+    },
+    {
+      "title": "group 2 property 1",
+      "dataIndex": "group 2 property 1"
+    },
+    {
+      "title": "group 2 property 2",
+      "dataIndex": "group 2 property 2"
+    },
+    {
+      "title": "group 2 property 3",
+      "dataIndex": "group 2 property 3"
+    }
+  ],
+  "dataSource": [
+    {
+      "key": "1",
+      "group 1 property 1": "group 1 - 1 First 9ylp7h",
+      "group 1 property 2": "group 1 - 1 Second 9ylp7h"
+    },
+    {
+      "key": "2",
+      "group 1 property 1": "group 1 - 2 First zb226h",
+      "group 1 property 2": "group 1 - 2 Second zb226h",
+      "group 1 property 3": "group 1 - 2 third zb226h"
+    },
+    {
+      "key": "3",
+      "group 2 property 1": "group 2 - 1 First t5km7v",
+      "group 2 property 2": "group 2 - 1 Second t5km7v"
+    },
+    {
+      "key": "4",
+      "group 2 property 1": "group 2 - 2 First 3e0a7f",
+      "group 2 property 2": "group 2 - 2 Second 3e0a7f",
+      "group 2 property 3": "group 2 - 2 third 3e0a7f"
+    }
+  ]
+}
 ```
