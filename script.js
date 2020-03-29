@@ -10,21 +10,41 @@ const mergeGroup = groups => {
   return data;
 };
 
+// Sorted Array of keys in data
 const getKeys = data => Object.keys(data).sort(collator.compare);
 
 const processGroup = output => {
   if (!output) return;
+
   console.time("processGroup");
-  const pageKeys = getKeys(output);
+
+  // Get Sorted Array of page keys in data
+  const pageKeys = getKeys(output);  // 0.631ms
+
   const data = {};
+
+  // For every key in array of page keys
   for (const pageKey of pageKeys) {
-    for (const groupKey of getKeys(output[pageKey])) {
+
+    // Get Sorted Array of group keys in data
+    const groupKeys = getKeys(output[pageKey]) // 1.221ms - 0.631ms
+
+    // For every key in array of group keys
+    for (const groupKey of groupKeys) {
+
+      // Get list of values in a group
       const newData = output[pageKey][groupKey];
+
+      // Get list of values in the same group in previous data (Feels unnecessary)
       const prevData = data[groupKey] || [];
+
+      // Merge them and add to the same group in `data` variable
       data[groupKey] = [...prevData, ...newData];
     }
   }
+
   console.timeEnd("processGroup");
+
   return data;
 };
 
