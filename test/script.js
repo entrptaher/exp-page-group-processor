@@ -24,25 +24,50 @@ const processGroup = output => {
 
   const data = {};
 
-  // For every key in array of page keys
-  for (const pageKey of pageKeys) {
+  const pageKeysP1 = pageKeys.slice(0, pageKeys.length / 2);
+  const pageKeysP2 = pageKeys.slice(pageKeys.length / 2);
 
-    // Get Sorted Array of group keys in data
-    const groupKeys = Object.keys(output[pageKey]) // 1.221ms - 0.631ms
 
-    // For every key in array of group keys
-    for (const groupKey of groupKeys) {
+  var myWorker1 = new Worker('worker.js');
+  var myWorker2 = new Worker('worker.js');
 
-      // Get list of values in a group
-      const newData = output[pageKey][groupKey];
+  console.time("processTime");
+  console.time("processTime2");
+  myWorker1.postMessage([pageKeysP1, output]);
+  myWorker2.postMessage([pageKeysP2, output]);
 
-      // Get list of values in the same group in previous data (Feels unnecessary)
-      const prevData = data[groupKey] || [];
-
-      // Merge them and add to the same group in `data` variable
-      data[groupKey] = [...prevData, ...newData];
-    }
+  myWorker1.onmessage = function (e) {
+    console.timeEnd("processTime");
+    console.log(e.data)
+    console.log('Message received from worker');
   }
+
+  myWorker2.onmessage = function (e) {
+    console.timeEnd("processTime2");
+    console.log(e.data)
+    console.log('Message received from worker');
+  }
+
+
+  // // For every key in array of page keys
+  // for (const pageKey of pageKeys) {
+
+  //   // Get Sorted Array of group keys in data
+  //   const groupKeys = Object.keys(output[pageKey]) // 1.221ms - 0.631ms
+
+  //   // For every key in array of group keys
+  //   for (const groupKey of groupKeys) {
+
+  //     // Get list of values in a group
+  //     const newData = output[pageKey][groupKey];
+
+  //     // Get list of values in the same group in previous data (Feels unnecessary)
+  //     const prevData = data[groupKey] || [];
+
+  //     // Merge them and add to the same group in `data` variable
+  //     data[groupKey] = [...prevData, ...newData];
+  //   }
+  // }
 
   console.timeEnd("processGroup");
 
@@ -85,7 +110,7 @@ const tableData = output => {
   };
 };
 
-module.exports = {
+export {
   tableData,
   generateColumns,
   mergeProcess,
