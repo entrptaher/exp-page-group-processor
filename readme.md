@@ -25,6 +25,19 @@ python3 load.py # 0.4393s
 crystal build load.cr --release && ./load # 1.8894s
 ```
 
+## Python script instruction
+
+To run the python script you can use the command
+```
+python3 index.py
+```
+
+To run with the profiler
+
+```
+python3 -m cProfile index.py
+```
+
 ## input
 ➜  json-data-comparison git:(master) ✗ node index.js
 525 Bytes
