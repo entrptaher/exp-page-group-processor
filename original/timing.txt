@@ -1,0 +1,8 @@
+Initial timing on my i7:
+
+processGroup: ~4043.208ms
+mergeGroup: 115.299ms
+
+In Chrome (Surprising!)
+processGroup: 14293.367919921875ms
+script.js:10 mergeGroup: 119.6201171875ms

@@ -13,40 +13,7 @@ const mergeGroup = groups => {
 // Sorted Array of keys in data
 const getKeys = data => Object.keys(data).sort(collator.compare);
 
-const processGroup = output => {
-  if (!output) return;
-
-  console.time("processGroup");
-
-  // Get Sorted Array of page keys in data
-  const pageKeys = getKeys(output);  // 0.631ms
-
-  const data = {};
-
-  // For every key in array of page keys
-  for (const pageKey of pageKeys) {
-
-    // Get Sorted Array of group keys in data
-    const groupKeys = getKeys(output[pageKey]) // 1.221ms - 0.631ms
-
-    // For every key in array of group keys
-    for (const groupKey of groupKeys) {
-
-      // Get list of values in a group
-      const newData = output[pageKey][groupKey];
-
-      // Get list of values in the same group in previous data (Feels unnecessary)
-      const prevData = data[groupKey] || [];
-
-      // Merge them and add to the same group in `data` variable
-      data[groupKey] = [...prevData, ...newData];
-    }
-  }
-
-  console.timeEnd("processGroup");
-
-  return data;
-};
+const processGroup = require('./process-data');
 
 const mergeProcess = input => mergeGroup(processGroup(input));
 
@@ -84,10 +51,4 @@ const tableData = output => {
   };
 };
 
-module.exports = {
-  tableData,
-  generateColumns,
-  mergeProcess,
-  mergeGroup,
-  processGroup
-};
+export { tableData, generateColumns, mergeProcess, mergeGroup, processGroup };
