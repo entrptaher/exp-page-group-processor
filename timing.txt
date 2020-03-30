@@ -1,4 +1,0 @@
-Initial timing on my i7:
-
-processGroup: ~4043.208ms
-mergeGroup: 115.299ms
