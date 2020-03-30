@@ -1,4 +1,3 @@
-
 const collator = new Intl.Collator(undefined, {
   numeric: true,
   sensitivity: "base"
@@ -28,7 +27,7 @@ const processGroup = output => {
   for (const pageKey of pageKeys) {
 
     // Get Sorted Array of group keys in data
-    const groupKeys = Object.keys(output[pageKey]) // 1.221ms - 0.631ms
+    const groupKeys = getKeys(output[pageKey]) // 1.221ms - 0.631ms
 
     // For every key in array of group keys
     for (const groupKey of groupKeys) {
