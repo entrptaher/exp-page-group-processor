@@ -5,6 +5,18 @@ const collator = new Intl.Collator(undefined, {
   sensitivity: "base"
 });
 
+function chunk(arr, len) {
+  var chunks = [],
+    i = 0,
+    n = arr.length;
+
+  while (i < n) {
+    chunks.push(arr.slice(i, (i += len)));
+  }
+
+  return chunks;
+}
+
 const mergeGroup = groups => {
   console.time("mergeGroup");
   const data = groups && Object.values(groups).flat();
@@ -17,27 +29,35 @@ const getKeys = data => Object.keys(data).sort(collator.compare);
 
 const processGroup = output => {
   if (!output) return;
-  console.time("processGroup");
+  console.group("processGroup");
 
   const data = {};
 
+  console.time("getKeys");
   // Get Sorted Array of page keys in data
   const pageKeys = getKeys(output);
+  console.timeEnd("getKeys");
 
-  // 0, pageKeys.length / 2
-  const getSlicedData = (start, end) => {
-    const slicedKeys = pageKeys.slice(start, end);
+  const getSlicedData = slicedKeys => {
     var worker = new Worker("worker.js");
     const wrappedFn = Comlink.wrap(worker);
     return wrappedFn([slicedKeys, output]);
   };
 
-  Promise.all([
-    getSlicedData(0, pageKeys.length / 2),
-    getSlicedData(pageKeys.length / 2)
-  ]).then(data => {
-    console.log({ data })
-    console.timeEnd("processGroup");
+  // each thread will handle almost equal keys
+  const chunkLimit = Math.ceil(pageKeys.length / navigator.hardwareConcurrency * 2);
+  const chunks = chunk(pageKeys, chunkLimit);
+  console.log({chunkLimit});
+  
+  console.time("processGroup-beforePromise");
+  const chunkPromise = Promise.all(chunks.map(part => getSlicedData(part)));
+
+  console.time("processGroup-afterPromise");
+  chunkPromise.then(data => {
+    console.log({ output, chunks, data });
+    console.timeEnd("processGroup-beforePromise");
+    console.timeEnd("processGroup-afterPromise");
+    console.groupEnd("processGroup");
   });
 
   return data;
