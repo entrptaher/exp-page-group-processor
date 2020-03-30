@@ -1,21 +1,16 @@
+const processGroup = require('./process-data');
+
 const collator = new Intl.Collator(undefined, {
   numeric: true,
   sensitivity: "base"
 });
 
-const mergeGroup = groups => {
-  console.time("mergeGroup");
-  const data = groups && Object.values(groups).flat();
-  console.timeEnd("mergeGroup");
-  return data;
-};
 
 // Sorted Array of keys in data
 const getKeys = data => Object.keys(data).sort(collator.compare);
 
-const processGroup = require('./process-data');
 
-const mergeProcess = input => mergeGroup(processGroup(input));
+const mergeProcess = input => processGroup(input);
 
 const addKeyToRow = data =>
   data.map((d, index) => ({ key: `${index + 1}`, ...d }));
@@ -51,4 +46,4 @@ const tableData = output => {
   };
 };
 
-export { tableData, generateColumns, mergeProcess, mergeGroup, processGroup };
+export { tableData, generateColumns, mergeProcess, processGroup };
