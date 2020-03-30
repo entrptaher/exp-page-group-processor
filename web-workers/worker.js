@@ -1,25 +1,17 @@
 const { expose } = require("threads/worker");
 
-async function processData([pageKeys, output]) {
+async function processData([index, part]) {
   const data = {};
-  // For every key in array of page keys
-  for (const pageKey of pageKeys) {
-    // Get Sorted Array of group keys in data
-    const groupKeys = Object.keys(output[pageKey]); // 1.221ms - 0.631ms
-
-    // For every key in array of group keys
+  for (const pageData of part) {
+    const groupKeys = Object.keys(pageData[1]);
+    console.log(groupKeys);
     for (const groupKey of groupKeys) {
-      // Get list of values in a group
-      const newData = output[pageKey][groupKey];
-
-      // Get list of values in the same group in previous data (Feels unnecessary)
-      const prevData = data[groupKey] || [];
-
-      // Merge them and add to the same group in `data` variable
+      const prevData = (data[groupKey] || []);
+      const newData = pageData[1][groupKey];
       data[groupKey] = [...prevData, ...newData];
     }
   }
-  return { pageKeys, data };
+  return { index, data };
 }
 
 expose(processData);

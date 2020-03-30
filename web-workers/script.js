@@ -28,11 +28,11 @@ const processGroup = output => {
   const pageKeys = getKeys(output);
   console.timeEnd("getKeys");
 
-  const getSlicedData = async slicedKeys => {
+  const getSlicedData = async (part, index) => {
     var worker = await spawn(new Worker("./worker.js"));
     return {
       worker,
-      processor: () => worker([slicedKeys, pick(output, slicedKeys)])
+      processor: () => worker([index, part])
     };
   };
 
@@ -43,15 +43,16 @@ const processGroup = output => {
 
   // if user have 6 core, it'll process 3 chunks, to avoid using all cores/threads
   const chunkLimit = Math.ceil(pageKeys.length / threadCount);
-  const chunks = chunk(pageKeys, chunkLimit);
-  console.log({ chunkLimit });
+  const chunks = chunk(Object.entries(output), chunkLimit);
+  console.log({ chunks, chunkLimit });
 
   console.time("processGroup");
   const chunkPromise = Promise.all(
-    chunks.map(async part => {
-      console.log(part);
-      const { worker, processor } = await getSlicedData(part);
+    chunks.map(async (part, index) => {
+      const { worker, processor } = await getSlicedData(part, index);
+      console.time("processor" + index);
       const data = await processor();
+      console.timeEnd("processor" + index);
       await Thread.terminate(worker);
       return data;
     })
