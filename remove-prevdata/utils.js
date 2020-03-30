@@ -3,15 +3,15 @@ const logLength = data => console.log(byteLength(JSON.stringify(data)));
 
 // Generates fake data to use in this experiment
 function getData(pageLimit = 1, groupLimit = 1) {
-  function getGroupData(identifier) {
+  function getGroupData(page, identifier) {
     const groupData = [];
     for (let i = 1; i <= groupLimit; i++) {
       const rand = Math.random()
         .toString(36)
         .substring(7);
       const data = {
-        [`${identifier} property 1`]: `${identifier} - ${i} First ${rand}`,
-        [`${identifier} property 2`]: `${identifier} - ${i} Second ${rand}`
+        [`${identifier} property 1`]: `${page} ${identifier} - ${i} First ${rand}`,
+        [`${identifier} property 2`]: `${page} ${identifier} - ${i} Second ${rand}`
       };
 
       // this data get's added only sometimes, which means the first group might not have all keys we need
@@ -26,8 +26,8 @@ function getData(pageLimit = 1, groupLimit = 1) {
   const newData = {};
   for (let i = 1; i <= pageLimit; i++) {
     newData[`page${i}`] = {
-      group1: getGroupData("group 1"),
-      group2: getGroupData("group 2")
+      group1: getGroupData(`page${i}`, "group 1"),
+      group2: getGroupData(`page${i}`, "group 2")
     };
   }
   return newData;
