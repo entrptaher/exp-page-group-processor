@@ -1,4 +1,4 @@
-import * as Comlink from "comlink";
+import { spawn, Thread, Worker } from "threads";
 
 const collator = new Intl.Collator(undefined, {
   numeric: true,
@@ -38,25 +38,35 @@ const processGroup = output => {
   const pageKeys = getKeys(output);
   console.timeEnd("getKeys");
 
-  const getSlicedData = slicedKeys => {
-    var worker = new Worker("worker.js");
-    const wrappedFn = Comlink.wrap(worker);
-    return wrappedFn([slicedKeys, output]);
+  const getSlicedData = async slicedKeys => {
+    var worker = await spawn(new Worker("./worker.js"));
+    return {
+      worker,
+      processor: () => worker([slicedKeys, output])
+    };
   };
 
-  // each thread will handle almost equal keys
-  const chunkLimit = Math.ceil(pageKeys.length / navigator.hardwareConcurrency * 2);
+  const threadCount = typeof navigator !== 'undefined'
+  ? navigator.hardwareConcurrency
+  : require("os").cpus().length;
+  // if user have 6 core, it'll process 3 chunks, to avoid using all cores/threads
+  const chunkLimit = Math.ceil((pageKeys.length / threadCount) * 2);
   const chunks = chunk(pageKeys, chunkLimit);
-  console.log({chunkLimit});
-  
-  console.time("processGroup-beforePromise");
-  const chunkPromise = Promise.all(chunks.map(part => getSlicedData(part)));
+  console.log({ chunkLimit });
 
-  console.time("processGroup-afterPromise");
+  console.time("processGroup");
+  const chunkPromise = Promise.all(
+    chunks.map(async part => {
+      const { worker, processor } = await getSlicedData(part);
+      const data = await processor();
+      await Thread.terminate(worker);
+      return data;
+    })
+  );
+
   chunkPromise.then(data => {
     console.log({ output, chunks, data });
-    console.timeEnd("processGroup-beforePromise");
-    console.timeEnd("processGroup-afterPromise");
+    console.timeEnd("processGroup");
     console.groupEnd("processGroup");
   });
 

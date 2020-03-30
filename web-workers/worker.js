@@ -1,4 +1,4 @@
-import * as Comlink from "comlink";
+const { expose } = require("threads/worker");
 
 async function processData([pageKeys, output]) {
   const data = {};
@@ -22,4 +22,4 @@ async function processData([pageKeys, output]) {
   return { pageKeys, data };
 }
 
-Comlink.expose(processData);
+expose(processData);
