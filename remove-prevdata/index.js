@@ -1,6 +1,7 @@
 import { mergeProcess, tableData } from "./script.js";
 import { getData, byteLength, log, logLength } from "./utils.js";
-import processTable from './process-table';
+import processTableNew from './process-table-new';
+import processTableOld from './process-table';
 
 // uncomment if you created json file manually
 // node index.js > sample.json
@@ -14,5 +15,10 @@ const input = getData(10, 302); // 100MB file?
 // logLength(input);
 // log(input);
 // mergeProcess(input)
+console.time("tableNew");
+processTableNew(input);
+console.timeEnd("tableNew");
 
-log(processTable(input));
+console.time("tableOld");
+processTableOld(input);
+console.timeEnd("tableOld");

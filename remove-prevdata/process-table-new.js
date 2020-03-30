@@ -1,20 +1,3 @@
-const generateColumns = data => {
-    const headers = [];
-    for (const d of data) {
-        const keys = Object.keys(d);
-        for (const key of keys) {
-            if (!headers.includes(key)) {
-                headers.push(key);
-            }
-        }
-    }
-
-    return headers.map(e => ({
-        title: e,
-        dataIndex: e
-    }));
-};
-
 module.exports = function processTable(output) {
     if (!output)
         return {
@@ -23,24 +6,36 @@ module.exports = function processTable(output) {
         };
 
     const data = {};
+    const headers = [];
 
     for (const groups of Object.values(output)) {
-
         for (const groupKey of Object.keys(groups)) {
-
             if (!data[groupKey]) data[groupKey] = [];
-
             data[groupKey].push(...groups[groupKey])
         }
     }
 
     const result = data && Object.values(data).flat();
 
+    let count = 0;
+    const keyAddedResult = [];
 
-    const keyAddedResult = result.map((d, index) => ({ key: `${index + 1}`, ...d }));
+    result.forEach(element => {
+        const keys = Object.keys(element);
+        const difference = keys.filter(x => !headers.includes(x));
+        headers.push(...difference);
+
+        keyAddedResult.push({
+            key: count++,
+            ...element
+        })
+    });
 
     return {
-        columns: generateColumns(keyAddedResult),
+        columns: headers.map(e => ({
+            title: e,
+            dataIndex: e
+        })),
         dataSource: keyAddedResult.length ? keyAddedResult : []
     };
 }
