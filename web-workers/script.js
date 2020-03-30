@@ -1,21 +1,11 @@
 import { spawn, Thread, Worker } from "threads";
+import chunk from "lodash/chunk";
+import pick from "lodash/pick";
 
 const collator = new Intl.Collator(undefined, {
   numeric: true,
   sensitivity: "base"
 });
-
-function chunk(arr, len) {
-  var chunks = [],
-    i = 0,
-    n = arr.length;
-
-  while (i < n) {
-    chunks.push(arr.slice(i, (i += len)));
-  }
-
-  return chunks;
-}
 
 const mergeGroup = groups => {
   console.time("mergeGroup");
@@ -42,21 +32,24 @@ const processGroup = output => {
     var worker = await spawn(new Worker("./worker.js"));
     return {
       worker,
-      processor: () => worker([slicedKeys, output])
+      processor: () => worker([slicedKeys, pick(output, slicedKeys)])
     };
   };
 
-  const threadCount = typeof navigator !== 'undefined'
-  ? navigator.hardwareConcurrency
-  : require("os").cpus().length;
+  const threadCount =
+    typeof navigator !== "undefined"
+      ? navigator.hardwareConcurrency
+      : require("os").cpus().length;
+
   // if user have 6 core, it'll process 3 chunks, to avoid using all cores/threads
-  const chunkLimit = Math.ceil((pageKeys.length / threadCount) * 2);
+  const chunkLimit = Math.ceil(pageKeys.length / threadCount);
   const chunks = chunk(pageKeys, chunkLimit);
   console.log({ chunkLimit });
 
   console.time("processGroup");
   const chunkPromise = Promise.all(
     chunks.map(async part => {
+      console.log(part);
       const { worker, processor } = await getSlicedData(part);
       const data = await processor();
       await Thread.terminate(worker);
