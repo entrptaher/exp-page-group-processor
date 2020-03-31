@@ -1,46 +1,51 @@
-const generateColumns = data => {
-    const headers = [];
-    for (const d of data) {
-        const keys = Object.keys(d);
-        for (const key of keys) {
-            if (!headers.includes(key)) {
-                headers.push(key);
-            }
-        }
-    }
+var _ = require('./lib/lodash');
 
-    return headers.map(e => ({
-        title: e,
-        dataIndex: e
-    }));
-};
-
-module.exports = function processTable(output) {
-    if (!output)
+module.exports = function processTable(dataInput, { pageParams = [], groupParams = [] } = {}) {
+    if (!dataInput)
         return {
             columns: [],
             dataSource: []
         };
 
+
+    if (pageParams.length > 0) {
+        dataInput = _.pick(dataInput, pageParams);
+    }
+
     const data = {};
+    const headers = [];
 
-    for (const groups of Object.values(output)) {
-
+    for (const groups of Object.values(dataInput)) {
         for (const groupKey of Object.keys(groups)) {
+            if (groupParams.length > 0 && !groupParams.includes(groupKey))
+                continue;
 
             if (!data[groupKey]) data[groupKey] = [];
-
-            data[groupKey].push(...groups[groupKey])
+            data[groupKey].push(...groups[groupKey]);
         }
     }
 
     const result = data && Object.values(data).flat();
 
+    let count = 0;
+    const keyAddedResult = [];
 
-    const keyAddedResult = result.map((d, index) => ({ key: `${index + 1}`, ...d }));
+    result.forEach(element => {
+        const keys = Object.keys(element);
+        const difference = keys.filter(x => !headers.includes(x));
+        headers.push(...difference);
+
+        keyAddedResult.push({
+            key: count++,
+            ...element
+        })
+    });
 
     return {
-        columns: generateColumns(keyAddedResult),
+        columns: headers.map(e => ({
+            title: e,
+            dataIndex: e
+        })),
         dataSource: keyAddedResult.length ? keyAddedResult : []
     };
 }
