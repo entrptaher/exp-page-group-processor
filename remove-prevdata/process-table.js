@@ -4,7 +4,8 @@ module.exports = function processTable(dataInput, {
     pageParams = [],
     groupParams = [],
     columns = true,
-    key = true
+    key = true,
+    property = [],
 } = {}) {
 
     if (!dataInput)
@@ -19,14 +20,19 @@ module.exports = function processTable(dataInput, {
 
     const data = {};
 
-
     for (const groups of Object.values(dataInput)) {
         for (const groupKey of Object.keys(groups)) {
             if (groupParams.length > 0 && !groupParams.includes(groupKey))
                 continue;
 
             if (!data[groupKey]) data[groupKey] = [];
-            data[groupKey].push(...groups[groupKey]);
+
+            if (property.length) {
+                data[groupKey].push(...groups[groupKey].map(element => _.pick(element, property)))
+            } else {
+                data[groupKey].push(...groups[groupKey]);
+            }
+
         }
     }
 
@@ -56,7 +62,6 @@ module.exports = function processTable(dataInput, {
     // Preapare output
     const output = {};
 
-    // 
     output.columns = headers.map(e => ({
         title: e,
         dataIndex: e

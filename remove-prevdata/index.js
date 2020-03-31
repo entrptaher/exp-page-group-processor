@@ -15,5 +15,5 @@ const input = getData(10, 10); // 100MB file?
 // log(input);
 // mergeProcess(input)
 console.time("processTable");
-log(processTable(input, { pageParams: ["page1", "page2"], groupParams: ['group1'], columns: false, key: false }));
+log(processTable(input, { pageParams: ["page1", "page2"], groupParams: ['group1'], columns: false, key: false, property: ["group 1 property 1", "group 1 property 2"] }));
 console.timeEnd("processTable");
